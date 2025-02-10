@@ -39,5 +39,13 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "/node_modules/(?!(react-router-dom)/)"
+    ]
   }
 }
