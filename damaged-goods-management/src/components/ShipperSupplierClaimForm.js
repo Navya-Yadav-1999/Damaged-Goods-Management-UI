@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { TextField, Button, Box, Grid, Typography, Container, MenuItem, Select, InputLabel, FormControl, IconButton } from '@mui/material';
+import { TextField, Button, Box, Grid, Typography, Container, MenuItem, Select, InputLabel, FormControl} from '@mui/material';
 import { AttachFile } from '@mui/icons-material';
 
 const ShipperSupplierClaimForm = () => {
