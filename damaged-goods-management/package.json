@@ -45,8 +45,11 @@
       "^.+\\.jsx?$": "babel-jest"
     },
     "transformIgnorePatterns": [
-      "/node_modules/(?!(react-router-dom)/)"
-    ]
+      "/node_modules/"
+    ],
+    "moduleNameMapper": {
+      "^react-router-dom$": "<rootDir>/node_modules/react-router-dom"
+    }
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
