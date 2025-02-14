@@ -25,8 +25,9 @@ function MasterLayout({ children }) {
   const navigate = useNavigate();
 
   const menuItems = [
-    { name: "Incident Report", path: "/incident-report" },
-    { name: "Inspection Report", path: "/inspection-report" },
+    { label: "Dashboard", path: "/" },
+    { name: "Incidents", path: "/incidents" },
+    { name: "Inspections", path: "/inspections" },
     { name: "Warehouse Incident", path: "/warehouse-incident-report" },
     { name: "Supplier Shipment Confirmation", path: "/supplier-shipment-report" },
     { name: "Shipper Supplier Claim", path: "/shipper-claim-report" },
