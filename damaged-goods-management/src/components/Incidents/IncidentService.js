@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://localhost:7043/api/IncidentReport";
+const API_URL = "http://localhost:5039/api/IncidentReport";
 
 export const getAllIncidents = async () => {
   return await axios.get(API_URL);

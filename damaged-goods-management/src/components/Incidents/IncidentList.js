@@ -25,7 +25,7 @@ const IncidentList = () => {
     fetchIncidents();
   }, []);
 
-  const fetchIncidents = async () => {
+  const fetchIncidents = async () => {  
     const response = await getAllIncidents();
     setIncidents(response.data);
   };

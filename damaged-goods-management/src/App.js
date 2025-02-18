@@ -40,9 +40,15 @@ import Dashboard from './Pages/Dashboard';
 import IncidentRoutes from './components/Incidents/IncidentRoutes';
 import InspectionRoutes from './components/Inspections/InspectionRoutes';
 import MasterLayout from './components/MasterLayout';
+import ShipperClaimRoutes from './components/ShipperClaims/ShipperClaimRoutes';
+import SupplierShipmentForm from './components/SupplierShipments/SupplierShipmentForm';
+import SupplierShipmentRoutes from './components/SupplierShipments/SupplierShipmentRoutes';
 import theme from './components/Theme';
 import { ThemeProvider } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import WarehouseIncidentRoutes from './components/WarehouseIncidents/WarehouseIncidentRoutes';
+import LoadingUnloadingForm from './components/LoadingUnloading/LoadingUnloadingForm';
+import LoadingUnloadingRoutes from './components/LoadingUnloading/LoadingUnloadingRoutes';
 
 function App() {
   return (
@@ -52,7 +58,11 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/incidents/*" element={<IncidentRoutes />} />
-            <Route path="/insepctions/*" element={<InspectionRoutes/>} />
+            <Route path="/inspections/*" element={<InspectionRoutes/>} />
+            <Route path='/shipper-claim-report/*' element={<ShipperClaimRoutes />} />
+            <Route path='/supplier-shipment-report/*' element={<SupplierShipmentRoutes />} />
+            <Route path='/warehouse-incident-report/*' element={<WarehouseIncidentRoutes />} />
+            <Route path='/loading-unloading-incident-report/*' element={<LoadingUnloadingRoutes />}/>
           </Routes>
         </MasterLayout>
       </Router>
