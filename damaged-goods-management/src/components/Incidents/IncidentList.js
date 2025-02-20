@@ -86,7 +86,7 @@ const IncidentList = () => {
           label="Search by Driver Name"
           variant="outlined"
           size="small"
-          sx={{ width: "60%" }}
+          sx={{ width: "85%" }}
           onChange={handleSearch}
         />
         <Button
@@ -183,7 +183,7 @@ const IncidentList = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleDelete} variant="contained" color="error">
+          <Button onClick={handleDeleteConfirm} variant="contained" color="error">
             Delete
           </Button>
         </DialogActions>

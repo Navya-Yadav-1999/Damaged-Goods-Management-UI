@@ -219,14 +219,7 @@ const IncidentForm = () => {
             </label>
           </Grid>
 
-          {/* Submit Button */}
-          {/* <Grid item xs={12}>
-            <Button variant="contained" color="primary" onClick={handleConfirmUpdate} fullWidth>
-              {id ? "Update Incident" : "Submit Report"}
-            </Button>
-          </Grid>
-        </Grid> */}
-          <Grid item xs={12}>
+         <Grid item xs={12}>
             {id ? (
               <Button variant="contained" color="primary" onClick={handleUpdateClick} fullWidth>
                 Update Incident

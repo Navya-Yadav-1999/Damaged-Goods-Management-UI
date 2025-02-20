@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Table, Box, Button, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TableSortLabel, TablePagination, TextField, IconButton, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Typography, Table, Box, Button, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TableSortLabel, TablePagination, TextField, IconButton, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { Edit, Delete, Add, CameraAlt, UploadFile } from "@mui/icons-material";
 import { getAllShipperClaim, deleteShipperClaim, uploadInspectionsPhoto, uploadShipperClaimPhoto } from "./ShipperClaimService";
 import { useNavigate } from "react-router-dom";
-import Webcam from "react-webcam";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
 
 const ShipperClaimList = () => {
     const [shipperClaim, setShipperClaim] = useState([]);
@@ -15,10 +12,8 @@ const ShipperClaimList = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [openDialog, setOpenDialog] = useState(false);
-    const [selectedShipperClaim, setSelectedShipperClaim] = useState(null);
-    const [photoFile, setPhotoFile] = useState(null);
-    const [capturedPhoto, setCapturedPhoto] = useState(null);
-    const webcamRef = useRef(null);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [selectedShipperClaim, setSelectedShipperClaim] = useState(null);    
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -26,13 +21,17 @@ const ShipperClaimList = () => {
     }, []);
 
     const fetchShipperClaim = async () => {
-        const response = await getAllShipperClaim();
-        setShipperClaim(response.data);
+        try{
+            const response = await getAllShipperClaim();
+            setShipperClaim(response.data);
+        }catch(error){
+            console.log("Error fetching shipperClaim:",error);
+        }       
     };
 
-    const handleDelete = async (id) => {
-        await deleteShipperClaim(id);
-        fetchShipperClaim();
+    const handleDelete = (shipperClaim) => {
+       setSelectedShipperClaim(shipperClaim);
+       setDeleteDialogOpen(true);
     };
 
     const handleSearch = (e) => {
@@ -45,94 +44,18 @@ const ShipperClaimList = () => {
         setOrderBy(property);
     };
 
-    const handleUploadDialog = (shipperClaim) => {
-        setSelectedShipperClaim(shipperClaim);
-        setOpenDialog(true);
-    };
-
-    const handleFileChange = (e) => {
-        if (e.target.files.length > 0) {
-            setPhotoFile(e.target.files[0]);
-        }
-    };
-
-    const handleCapturePhoto = () => {
-        const imageSrc = webcamRef.current.getScreenshot();
-        setCapturedPhoto(imageSrc);
-    };
-
-    const handleUploadPhoto = async () => {
-        if (!photoFile && !capturedPhoto) {
-            alert("Please select or capture a photo.");
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append("reportId", selectedShipperClaim?.id);
-
-        if (photoFile) {
-            formData.append("file", photoFile);
-        } else if (capturedPhoto) {
-            const blob = await fetch(capturedPhoto).then(res => res.blob());
-            formData.append("file", blob, "captured_photo.jpg");
-        }
-
-        try {
-            await uploadShipperClaimPhoto(formData);
-            alert("Photo uploaded successfully.");
-            fetchShipperClaim();
-            setOpenDialog(false);
-            setPhotoFile(null);
-            setCapturedPhoto(null);
-        } catch (error) {
-            alert("Error uploading photo.");
-            console.error(error);
-        }
-    };
-
     const filteredShipperClaim = shipperClaim.filter((shipperClaim) =>
         shipperClaim.claimType?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
         <Paper sx={{ padding: 2 }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                <Box sx={{ flex: 1, textAlign: "center", padding: 2 }}>
-                    <input
-                        accept="image/*"
-                        style={{ display: "none" }}
-                        id="upload-photo"
-                        type="file"
-                        onChange={handleUploadPhoto}
-                    />
-                    <label htmlFor="upload-photo">
-                        <Button
-                            variant="contained"
-                            component="span"
-                            startIcon={<CloudUploadIcon />}
-                            sx={{ width: "100%" }}
-                        >
-                            Upload a Photo
-                        </Button>
-                    </label>
-                </Box>
-
-                {/* Take Photo */}
-                <Box sx={{ flex: 1, textAlign: "center", padding: 2 }}>
-                    <Button
-                        variant="contained"
-                        startIcon={<CameraAltIcon />}
-                        onClick={handleCapturePhoto}
-                        sx={{ width: "100%" }}
-                    >
-                        Take a Photo
-                    </Button>
-                </Box>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>                
                 <TextField
                     label="Search by Inspector Name"
                     variant="outlined"
                     size="small"
-                    sx={{ width: "60%" }}
+                    sx={{ width: "82%" }}
                     onChange={handleSearch}
                 />
                 <Button
@@ -192,19 +115,14 @@ const ShipperClaimList = () => {
         onPageChange={(event, newPage) => setPage(newPage)}
         onRowsPerPageChange={(event) => setRowsPerPage(parseInt(event.target.value, 10))}
       /> 
-       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>Upload or Capture Photo</DialogTitle>
+       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
-          <input type="file" accept="image/*" onChange={handleFileChange} />
-          <Webcam ref={webcamRef} screenshotFormat="image/jpeg" style={{ width: "100%", marginTop: "10px" }} />
-          <Button variant="contained" color="primary" startIcon={<CameraAlt />} onClick={handleCapturePhoto}>
-            Capture Photo
-          </Button>
-          {capturedPhoto && <img src={capturedPhoto} alt="Captured" style={{ width: "100%", marginTop: "10px" }} />}
+        <Typography>Are you sure you want to delete this shipperClaim?</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-          <Button onClick={handleUploadPhoto} variant="contained" color="primary">Upload</Button>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleDelete} variant="contained" color="error">Delete</Button>
         </DialogActions>
       </Dialog>
         </Paper>
