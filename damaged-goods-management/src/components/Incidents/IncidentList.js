@@ -39,6 +39,7 @@ const IncidentList = () => {
     fetchIncidents();
   }, []);
 
+
   const fetchIncidents = async () => {
     try {
       const response = await getAllIncidents();
@@ -52,15 +53,16 @@ const IncidentList = () => {
   const handleDeleteConfirm = (incident) => {
     setSelectedIncident(incident);
     setDeleteDialogOpen(true);
+
   };
 
-  const handleDelete = async () => {
-    if (selectedIncident) {
-      await deleteIncident(selectedIncident.id);
-      fetchIncidents(); // Refresh the incident list after deletion
-      setDeleteDialogOpen(false);
-    }
-  };
+//   const handleDelete = async () => {
+//     if (selectedIncident) {
+//       await deleteIncident(selectedIncident.id);
+//       fetchIncidents(); // Refresh the incident list after deletion
+//       setDeleteDialogOpen(false);
+//     }
+//   };
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -84,7 +86,7 @@ const IncidentList = () => {
           label="Search by Driver Name"
           variant="outlined"
           size="small"
-          sx={{ width: "60%" }}
+          sx={{ width: "85%" }}
           onChange={handleSearch}
         />
         <Button
@@ -195,7 +197,7 @@ const IncidentList = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleDelete} variant="contained" color="error">
+          <Button onClick={handleDeleteConfirm} variant="contained" color="error">
             Delete
           </Button>
         </DialogActions>

@@ -219,12 +219,7 @@ const IncidentForm = () => {
             </label>
           </Grid>
 
-          <Grid item xs={12}>
-            <Typography variant="body1">Uploaded Photos: {incident.photos || "None"}</Typography>
-          </Grid>
-
-          {/* Submit Button */}
-          <Grid item xs={12}>
+         <Grid item xs={12}>
             {id ? (
               <Button variant="contained" color="primary" onClick={handleUpdateClick} fullWidth>
                 Update Incident
