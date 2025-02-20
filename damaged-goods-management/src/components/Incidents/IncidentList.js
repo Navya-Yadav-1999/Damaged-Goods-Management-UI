@@ -138,13 +138,27 @@ const IncidentList = () => {
                 <TableCell>{incident.goodsAffected}</TableCell>
                 <TableCell>{incident.causeOfDamage}</TableCell>
                 <TableCell>{incident.witnesses}</TableCell>
-                <TableCell>
+                {/* <TableCell>
                   {incident.photos ? (
                     incident.photos.split(",").map((photo, index) => (
                       <a key={index} href={`${photo}`} target="_blank" rel="noopener noreferrer">
-                        View
+                        view
                       </a>
                     ))
+                  ) : (
+                    "N/A"
+                  )}
+                </TableCell> */}
+                <TableCell>
+                  {incident.photos ? (
+                    incident.photos.split(",").map((photo, index) => {
+                      const fileName = photo.split("_").slice(1).join("_"); // Remove ID prefix
+                      return (
+                        <a key={index} href={`${photo}`} target="_blank" rel="noopener noreferrer" style={{ marginRight: "10px" }}>
+                          {fileName}
+                        </a>
+                      );
+                    })
                   ) : (
                     "N/A"
                   )}
