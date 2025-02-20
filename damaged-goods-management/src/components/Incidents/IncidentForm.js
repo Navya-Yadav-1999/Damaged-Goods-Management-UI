@@ -68,33 +68,59 @@ const IncidentForm = () => {
   };
 
   // Handle file upload
-  const handleFileUpload = async (e) => {
+  // const handleFileUpload = async (e) => {
+  //   const files = e.target.files;
+  //   if (!files.length) return;
+
+  //   const uploadedFiles = Array.from(files);
+  //   const updatedPhotos = uploadedFiles.map((file) => file.name).join(","); // Join file names in a comma-separated list
+
+  //   setPhotoFiles((prevFiles) => [...prevFiles, ...uploadedFiles]); // Add new files to the state for preview
+
+  //   try {
+  //     const formData = new FormData();
+  //     uploadedFiles.forEach((file) => formData.append("files", file));
+
+  //     // If there's an existing incident ID, append it to the form data
+  //     if (id) {
+  //       formData.append("reportId", id);
+  //     }
+
+  //     const response = await uploadIncidentPhoto(formData, id);
+
+  //     if (response.status === 200) {
+  //       // Assuming the response contains file URLs or paths
+  //       const uploadedPhotoNames = response.data.photos.join(","); // Convert to a comma-separated string
+
+  //       setIncident((prev) => ({
+  //         ...prev,
+  //         photos: prev.photos ? `${prev.photos},${uploadedPhotoNames}` : uploadedPhotoNames, // Append the new photos
+  //       }));
+  //     }
+  //   } catch (error) {
+  //     console.error("Photo upload failed:", error);
+  //   }
+  // };
+
+   // Handle file upload
+   const handleFileUpload = async (e) => {
     const files = e.target.files;
-    if (files.length === 0) return;
+    if (!files.length) return;
 
     const uploadedFiles = Array.from(files);
-    const updatedPhotos = uploadedFiles.map((file) => file.name).join(","); // Join file names in a comma-separated list
-
-    setPhotoFiles((prevFiles) => [...prevFiles, ...uploadedFiles]); // Add new files to the state for preview
+    setPhotoFiles(uploadedFiles); // Store the files for preview
 
     try {
       const formData = new FormData();
       uploadedFiles.forEach((file) => formData.append("files", file));
-
-      // If there's an existing incident ID, append it to the form data
-      if (id) {
-        formData.append("reportId", id);
-      }
+      if (id) formData.append("reportId", id);
 
       const response = await uploadIncidentPhoto(formData, id);
-
       if (response.status === 200) {
-        // Assuming the response contains file URLs or paths
-        const uploadedPhotoNames = response.data.photos.join(","); // Convert to a comma-separated string
-
+        const uploadedPhotoNames = response.data.photos.join(",");
         setIncident((prev) => ({
           ...prev,
-          photos: prev.photos ? `${prev.photos},${uploadedPhotoNames}` : uploadedPhotoNames, // Append the new photos
+          photos: uploadedPhotoNames, // Update with uploaded photo names
         }));
       }
     } catch (error) {
@@ -126,6 +152,16 @@ const IncidentForm = () => {
   const handleConfirmUpdate = async () => {
     setOpenDialog(false);
     try {
+      // Ensure photos are uploaded before submitting
+      if (photoFiles.length > 0) {
+        await handleFileUpload({ target: { files: photoFiles } });
+      }
+
+      const requestData = {
+        ...incident,
+        dateAndTime: new Date().toISOString(),
+      };
+
       const response = id
         ? await updateIncident(id, { ...tempIncident, dateAndTime: new Date().toISOString() })
         : await addIncident({ ...incident, dateAndTime: new Date().toISOString() });
@@ -152,70 +188,34 @@ const IncidentForm = () => {
         </Typography>
         <Grid container spacing={2}>
           {/* Form Fields */}
-          <Grid item xs={12} sm={6}>
-            <TextField label="Driver Name" name="driverName" value={incident.driverName} onChange={handleChange} fullWidth variant="outlined" />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField label="Truck ID" name="truckId" value={incident.truckId} onChange={handleChange} fullWidth variant="outlined" />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField label="Shipment Reference" name="shipmentReference" value={incident.shipmentReference} onChange={handleChange} fullWidth variant="outlined" />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField label="Type of Damage" name="typeOfDamage" value={incident.typeOfDamage} onChange={handleChange} fullWidth variant="outlined" />
-          </Grid>
+          {[
+            { label: "Driver Name", name: "driverName" },
+            { label: "Truck ID", name: "truckId" },
+            { label: "Shipment Reference", name: "shipmentReference" },
+            { label: "Type of Damage", name: "typeOfDamage" },
+            { label: "Severity", name: "severity" },
+            { label: "Goods Affected", name: "goodsAffected" },
+            { label: "Cause of Damage", name: "causeOfDamage" },
+            { label: "Witnesses", name: "witnesses" },
+            { label: "Additional Comments", name: "additionalComments" },
+          ].map(({ label, name }, index) => (
+            <Grid item xs={12} sm={6} key={index}>
+              <TextField label={label} name={name} value={incident[name]} onChange={handleChange} fullWidth variant="outlined" />
+            </Grid>
+          ))}
 
           <Grid item xs={12}>
             <TextField label="Damage Description" name="damageDescription" value={incident.damageDescription} onChange={handleChange} fullWidth variant="outlined" multiline rows={4} />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <TextField label="Severity" name="severity" value={incident.severity} onChange={handleChange} fullWidth variant="outlined" />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField label="Goods Affected" name="goodsAffected" value={incident.goodsAffected} onChange={handleChange} fullWidth variant="outlined" multiline rows={2} />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField label="Cause of Damage" name="causeOfDamage" value={incident.causeOfDamage} onChange={handleChange} fullWidth variant="outlined" />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField label="Witnesses" name="witnesses" value={incident.witnesses} onChange={handleChange} fullWidth variant="outlined" multiline rows={2} />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField label="Photos (URLs or Base64)" name="photos" value={incident.photos} onChange={handleChange} fullWidth variant="outlined" />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField label="Additional Comments" name="additionalComments" value={incident.additionalComments} onChange={handleChange} fullWidth variant="outlined" multiline rows={3} />
-          </Grid>
-
           {/* Upload Photo Section */}
           <Grid item xs={12} sm={6} sx={{ textAlign: "center" }}>
-            <IconButton onClick={startCamera}>
-              <CameraAlt color="primary" fontSize="large" />
-            </IconButton>
-            <Typography variant="body1">Capture Photo</Typography>
-
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleFileUpload}
-              style={{ display: "none" }}
-              id="upload-photo-input"
-            />
+            <input type="file" accept="image/*" multiple onChange={handleFileUpload} style={{ display: "none" }} id="upload-photo-input" />
             <label htmlFor="upload-photo-input">
               <IconButton component="span">
                 <AddPhotoAlternate color="primary" fontSize="large" />
               </IconButton>
-              <Typography variant="body1">Upload Photo</Typography>
+              <Typography variant="body1">Upload Photos</Typography>
             </label>
           </Grid>
 
@@ -230,6 +230,7 @@ const IncidentForm = () => {
               </Button>
             )}
           </Grid>
+
         </Grid>
       </Box>
 
